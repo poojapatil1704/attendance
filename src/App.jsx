@@ -1,41 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-// ─── DATA ───────────────────────────────────────────────────────────────────
 const EMPLOYEES = [
-  { id: "E001", name: "Alice Johnson", dept: "Engineering", role: "Developer", avatar: "AJ" },
-  { id: "E002", name: "Bob Smith", dept: "Marketing", role: "Manager", avatar: "BS" },
-  { id: "E003", name: "Carol White", dept: "HR", role: "Analyst", avatar: "CW" },
-  { id: "E004", name: "David Lee", dept: "Engineering", role: "Tech Lead", avatar: "DL" },
-  { id: "E005", name: "Eva Chen", dept: "Finance", role: "Accountant", avatar: "EC" },
-  { id: "E006", name: "Frank Patel", dept: "Marketing", role: "Designer", avatar: "FP" },
-  { id: "E007", name: "Grace Kim", dept: "HR", role: "Recruiter", avatar: "GK" },
-  { id: "E008", name: "Henry Osei", dept: "Engineering", role: "DevOps", avatar: "HO" },
+  { id: "E001", name: "Alice Johnson", dept: "Engineering", avatar: "AJ" },
+  { id: "E002", name: "Bob Smith", dept: "Marketing", avatar: "BS" },
+  { id: "E003", name: "Carol White", dept: "HR", avatar: "CW" },
+  { id: "E004", name: "David Lee", dept: "Engineering", avatar: "DL" },
+  { id: "E005", name: "Eva Chen", dept: "Finance", avatar: "EC" },
+  { id: "E006", name: "Frank Patel", dept: "Marketing", avatar: "FP" },
+  { id: "E007", name: "Grace Kim", dept: "HR", avatar: "GK" },
+  { id: "E008", name: "Henry Osei", dept: "Engineering", avatar: "HO" },
 ];
 
 const TASKS = [
-  "Analyze today's attendance data. Identify who is present, late, or absent. Flag anomalies like unusual check-in times.",
-  "Based on attendance patterns, draft specific alert messages for managers about absent or late employees.",
-  "Generate a comprehensive department-wise attendance report with recommendations to improve attendance.",
+  "Analyze today's attendance. Who is present, late, or absent? Flag anomalies.",
+  "Draft alert messages for managers about absent or late employees.",
+  "Generate a department-wise attendance report with recommendations.",
 ];
 
 function generateAttendance() {
-  const now = new Date();
   return EMPLOYEES.map((emp) => {
     const roll = Math.random();
     let status, checkIn, checkOut;
     if (roll < 0.12) {
-      status = "Absent"; checkIn = null; checkOut = null;
+      status = "Absent";
+      checkIn = null;
+      checkOut = null;
     } else if (roll < 0.28) {
       status = "Late";
-      const h = 10 + Math.floor(Math.random() * 2);
-      const m = Math.floor(Math.random() * 60);
-      checkIn = `${h}:${String(m).padStart(2, "0")} AM`;
-      checkOut = `${5 + Math.floor(Math.random() * 3)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")} PM`;
+      checkIn = `${10 + Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")} AM`;
+      checkOut = `${5 + Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")} PM`;
     } else {
       status = "Present";
-      const h = 8 + Math.floor(Math.random() * 1);
-      const m = Math.floor(Math.random() * 60);
-      checkIn = `${h}:${String(m).padStart(2, "0")} AM`;
+      checkIn = `${8 + Math.floor(Math.random() * 1)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")} AM`;
       checkOut = `${5 + Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")} PM`;
     }
     return {
@@ -44,262 +40,25 @@ function generateAttendance() {
       checkIn,
       checkOut,
       anomaly: Math.random() > 0.78,
-      date: now.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" }),
     };
   });
 }
 
-// ─── STYLES ─────────────────────────────────────────────────────────────────
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #070b14;
-    --surface: #0d1526;
-    --surface2: #111d33;
-    --border: #1e2d4a;
-    --accent: #00d4ff;
-    --accent2: #7c3aed;
-    --green: #00e676;
-    --yellow: #ffd600;
-    --red: #ff1744;
-    --text: #e8f4f8;
-    --muted: #4a6080;
-  }
-
-  body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; }
-
-  .app {
-    min-height: 100vh;
-    background: var(--bg);
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,212,255,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 40% at 90% 10%, rgba(124,58,237,0.06) 0%, transparent 50%);
-    padding: 0 0 60px;
-  }
-
-  /* Header */
-  .header {
-    border-bottom: 1px solid var(--border);
-    padding: 24px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(13,21,38,0.8);
-    backdrop-filter: blur(10px);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo { display: flex; align-items: center; gap: 14px; }
-  .logo-icon {
-    width: 42px; height: 42px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-  .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
-  .logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
-  .header-date { font-size: 12px; color: var(--muted); text-align: right; }
-  .live-dot {
-    display: inline-block; width: 8px; height: 8px;
-    background: var(--green); border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
-
-  /* Main */
-  .main { max-width: 1200px; margin: 0 auto; padding: 40px 40px 0; }
-
-  /* Agent Control */
-  .control-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    margin-bottom: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-  .control-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-  .control-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: gap; gap: 20px; }
-  .control-info h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-  .control-info p { color: var(--muted); font-size: 13px; line-height: 1.6; max-width: 560px; }
-
-  .run-btn {
-    background: linear-gradient(135deg, var(--accent), #0099cc);
-    border: none; color: #000; padding: 14px 32px;
-    border-radius: 10px; cursor: pointer; font-size: 14px;
-    font-family: 'JetBrains Mono', monospace; font-weight: 700;
-    letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .run-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,255,0.3); }
-  .run-btn:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
-
-  /* Progress steps */
-  .steps { display: flex; gap: 12px; margin-top: 24px; }
-  .step {
-    flex: 1; padding: 12px 16px; border-radius: 8px;
-    border: 1px solid var(--border); background: var(--surface2);
-    font-size: 12px; transition: all 0.3s;
-  }
-  .step.active { border-color: var(--accent); background: rgba(0,212,255,0.05); color: var(--accent); }
-  .step.done { border-color: var(--green); background: rgba(0,230,118,0.05); color: var(--green); }
-  .step-num { font-weight: 700; margin-bottom: 4px; }
-  .step-label { color: inherit; opacity: 0.8; font-size: 11px; }
-
-  /* Stats row */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-  .stat-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px 24px;
-  }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; }
-  .stat-value.green { color: var(--green); }
-  .stat-value.yellow { color: var(--yellow); }
-  .stat-value.red { color: var(--red); }
-  .stat-value.blue { color: var(--accent); }
-
-  /* Section headers */
-  .section-title {
-    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 2px; color: var(--muted);
-    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* Table */
-  .table-wrap {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden; margin-bottom: 32px;
-  }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    padding: 14px 20px; text-align: left; font-size: 11px;
-    color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
-    border-bottom: 1px solid var(--border); background: var(--surface2);
-  }
-  td { padding: 14px 20px; font-size: 13px; border-bottom: 1px solid rgba(30,45,74,0.5); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(0,212,255,0.02); }
-
-  .avatar {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: white; margin-right: 10px;
-    vertical-align: middle;
-  }
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: 600;
-  }
-  .badge-present { background: rgba(0,230,118,0.12); color: var(--green); border: 1px solid rgba(0,230,118,0.2); }
-  .badge-late { background: rgba(255,214,0,0.12); color: var(--yellow); border: 1px solid rgba(255,214,0,0.2); }
-  .badge-absent { background: rgba(255,23,68,0.12); color: var(--red); border: 1px solid rgba(255,23,68,0.2); }
-  .anomaly-flag { color: var(--yellow); font-size: 13px; }
-
-  /* Two column layout */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
-
-  /* Agent log */
-  .agent-log {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden;
-  }
-  .log-header {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    font-size: 12px; color: var(--accent);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .log-entry { padding: 16px 20px; border-bottom: 1px solid var(--border); animation: fadeIn 0.4s ease; }
-  .log-entry:last-child { border-bottom: none; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-  .log-task { font-size: 11px; color: var(--accent2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-  .log-summary { font-size: 13px; line-height: 1.7; color: var(--text); }
-  .log-rec { font-size: 12px; color: var(--green); margin-top: 6px; }
-
-  /* Alerts */
-  .alerts-panel {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden;
-  }
-  .alert-item {
-    padding: 14px 20px; border-bottom: 1px solid var(--border);
-    font-size: 13px; line-height: 1.6; color: #ff8a80;
-    border-left: 3px solid var(--red); animation: fadeIn 0.4s ease;
-  }
-  .alert-item:last-child { border-bottom: none; }
-
-  /* Report */
-  .report-card {
-    background: var(--surface); border: 1px solid var(--green);
-    border-radius: 16px; padding: 28px; margin-bottom: 32px;
-    position: relative; animation: fadeIn 0.5s ease;
-  }
-  .report-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--green), transparent);
-  }
-  .report-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 16px; }
-  .report-body { font-size: 13px; line-height: 1.9; color: var(--text); white-space: pre-wrap; }
-
-  /* Thinking animation */
-  .thinking { display: flex; align-items: center; gap: 10px; padding: 16px 20px; color: var(--muted); font-size: 13px; }
-  .thinking-dots span {
-    display: inline-block; width: 6px; height: 6px;
-    background: var(--accent); border-radius: 50%; margin: 0 2px;
-    animation: blink 1.2s infinite;
-  }
-  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%,80%,100%{opacity:0;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
-
-  .empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 13px; }
-
-  @media (max-width: 768px) {
-    .main { padding: 20px; }
-    .header { padding: 16px 20px; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .two-col { grid-template-columns: 1fr; }
-    .steps { flex-direction: column; }
-    .control-header { flex-direction: column; align-items: flex-start; }
-  }
-`;
-
-// ─── COMPONENT ───────────────────────────────────────────────────────────────
-export default function AgenticAttendanceApp() {
+export default function App() {
   const [attendance, setAttendance] = useState([]);
   const [agentLog, setAgentLog] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [thinking, setThinking] = useState(false);
   const [hasRun, setHasRun] = useState(false);
 
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric",
-  });
+  const present = attendance.filter((e) => e.status === "Present").length;
+  const late = attendance.filter((e) => e.status === "Late").length;
+  const absent = attendance.filter((e) => e.status === "Absent").length;
+  const anomalies = attendance.filter((e) => e.anomaly).length;
 
-  const stats = attendance.length
-    ? {
-        present: attendance.filter((e) => e.status === "Present").length,
-        late: attendance.filter((e) => e.status === "Late").length,
-        absent: attendance.filter((e) => e.status === "Absent").length,
-        anomalies: attendance.filter((e) => e.anomaly).length,
-      }
-    : { present: 0, late: 0, absent: 0, anomalies: 0 };
-
-  const runAgentCycle = async () => {
+  const runAgent = async () => {
     setLoading(true);
     setHasRun(true);
     const data = generateAttendance();
@@ -307,30 +66,18 @@ export default function AgenticAttendanceApp() {
     setAgentLog([]);
     setAlerts([]);
     setReport(null);
-    setCurrentStep(0);
 
     for (let i = 0; i < TASKS.length; i++) {
       setCurrentStep(i + 1);
-      setThinking(true);
 
-      const prompt = `You are an intelligent HR Attendance Management Agent.
-
-Today's Date: ${today}
-Employee Attendance Data:
-${JSON.stringify(data, null, 2)}
-
-Your Task (Step ${i + 1} of 3): ${TASKS[i]}
-
-Respond ONLY with a valid JSON object, no markdown, no backticks:
-{
-  "summary": "2-3 sentence summary of your analysis",
-  "alerts": ["alert message 1", "alert message 2"],
-  "recommendations": ["recommendation 1", "recommendation 2"],
-  "reportReady": ${i === 2}
-}`;
+      const prompt = `You are an HR Attendance AI Agent.
+Attendance Data: ${JSON.stringify(data)}
+Task: ${TASKS[i]}
+Reply ONLY with JSON, no markdown:
+{"summary":"...","alerts":["..."],"recommendations":["..."]}`;
 
       try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -339,21 +86,16 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
             messages: [{ role: "user", content: prompt }],
           }),
         });
-
-        const result = await response.json();
+        const result = await res.json();
         const text = result.content?.map((c) => c.text || "").join("") || "{}";
-        const clean = text.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(clean);
-
-        setThinking(false);
-        setAgentLog((prev) => [...prev, { step: i + 1, task: TASKS[i], ...parsed }]);
-        if (parsed.alerts?.length) setAlerts((prev) => [...prev, ...parsed.alerts]);
-        if (parsed.reportReady && parsed.summary) setReport(parsed.summary);
-      } catch (err) {
-        setThinking(false);
+        const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
+        setAgentLog((prev) => [...prev, { step: i + 1, ...parsed }]);
+        if (parsed.alerts) setAlerts((prev) => [...prev, ...parsed.alerts]);
+        if (i === 2 && parsed.summary) setReport(parsed.summary);
+      } catch (e) {
         setAgentLog((prev) => [
           ...prev,
-          { step: i + 1, task: TASKS[i], summary: "Agent encountered an error processing this step.", alerts: [], recommendations: [] },
+          { step: i + 1, summary: "Error processing this step.", alerts: [], recommendations: [] },
         ]);
       }
 
@@ -364,127 +106,205 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
     setLoading(false);
   };
 
-  const stepLabels = ["Analyze Attendance", "Draft Alerts", "Generate Report"];
+  const stepNames = ["Analyze", "Alert", "Report"];
 
   return (
-    <>
-      <style>{styles}</style>
-      <div className="app">
-        {/* Header */}
-        <header className="header">
-          <div className="logo">
-            <div className="logo-icon">🤖</div>
+    <div style={{ fontFamily: "monospace", background: "#0d1117", minHeight: "100vh", color: "#e6edf3" }}>
+      
+      {/* Header */}
+      <div style={{ background: "#161b22", borderBottom: "1px solid #30363d", padding: "16px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ background: "linear-gradient(135deg,#00d4ff,#7c3aed)", borderRadius: 10, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 18, color: "#58a6ff" }}>AttendAI</div>
+            <div style={{ fontSize: 11, color: "#8b949e", letterSpacing: 2 }}>AGENTIC ATTENDANCE SYSTEM</div>
+          </div>
+        </div>
+        <div style={{ fontSize: 12, color: "#8b949e" }}>
+          <span style={{ display: "inline-block", width: 8, height: 8, background: "#3fb950", borderRadius: "50%", marginRight: 6 }}></span>
+          SIMULATION ACTIVE
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: 32 }}>
+
+        {/* Control Card */}
+        <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 12, padding: 28, marginBottom: 28 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
             <div>
-              <div className="logo-text">AttendAI</div>
-              <div className="logo-sub">Agentic Attendance System</div>
+              <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>AI Agent Control Panel</div>
+              <div style={{ color: "#8b949e", fontSize: 13 }}>The agent runs 3 autonomous steps: Analyze → Alert → Report</div>
             </div>
+            <button
+              onClick={runAgent}
+              disabled={loading}
+              style={{
+                background: loading ? "#21262d" : "linear-gradient(135deg,#00d4ff,#0099cc)",
+                color: loading ? "#8b949e" : "#000",
+                border: "none", padding: "12px 28px", borderRadius: 8,
+                cursor: loading ? "not-allowed" : "pointer",
+                fontWeight: 700, fontSize: 14, fontFamily: "monospace",
+              }}
+            >
+              {loading ? `⚙ RUNNING STEP ${currentStep}/3...` : "▶ RUN AGENT CYCLE"}
+            </button>
           </div>
-          <div className="header-date">
-            <div><span className="live-dot" />SIMULATION ACTIVE</div>
-            <div style={{ marginTop: 4 }}>{today}</div>
-          </div>
-        </header>
 
-        <div className="main">
-          {/* Control Card */}
-          <div className="control-card">
-            <div className="control-header">
-              <div className="control-info">
-                <h2>AI Agent Control Panel</h2>
-                <p>
-                  The autonomous agent runs a 3-step cycle: it first analyzes all attendance data,
-                  then drafts manager alerts, and finally produces a department report — all powered by Claude AI.
-                </p>
-              </div>
-              <button className="run-btn" onClick={runAgentCycle} disabled={loading}>
-                {loading ? `⚙ RUNNING STEP ${currentStep}/3...` : "▶ RUN AGENT CYCLE"}
-              </button>
-            </div>
-
-            <div className="steps">
-              {stepLabels.map((label, i) => (
-                <div
-                  key={i}
-                  className={`step ${currentStep === i + 1 && loading ? "active" : ""} ${currentStep > i + 1 || (!loading && currentStep === 4 && hasRun) ? "done" : ""}`}
-                >
-                  <div className="step-num">
-                    {currentStep > i + 1 || (!loading && currentStep === 4 && hasRun) ? "✓" : `0${i + 1}`}
-                  </div>
-                  <div className="step-label">{label}</div>
+          {/* Steps */}
+          <div style={{ display: "flex", gap: 12, marginTop: 20, flexWrap: "wrap" }}>
+            {stepNames.map((name, i) => {
+              const done = currentStep > i + 1 || (!loading && currentStep === 4 && hasRun);
+              const active = currentStep === i + 1 && loading;
+              return (
+                <div key={i} style={{
+                  flex: 1, minWidth: 100, padding: "10px 16px", borderRadius: 8, border: "1px solid",
+                  borderColor: done ? "#3fb950" : active ? "#00d4ff" : "#30363d",
+                  background: done ? "rgba(63,185,80,0.05)" : active ? "rgba(0,212,255,0.05)" : "#0d1117",
+                  color: done ? "#3fb950" : active ? "#00d4ff" : "#8b949e",
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>{done ? "✓" : `0${i + 1}`}</div>
+                  <div style={{ fontSize: 11, marginTop: 2 }}>{name}</div>
                 </div>
-              ))}
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Stats */}
+        {attendance.length > 0 && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 28 }}>
+            {[
+              { label: "Present", value: present, color: "#3fb950" },
+              { label: "Late", value: late, color: "#d29922" },
+              { label: "Absent", value: absent, color: "#f85149" },
+              { label: "Anomalies", value: anomalies, color: "#58a6ff" },
+            ].map((s) => (
+              <div key={s.label} style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 10, padding: "18px 22px" }}>
+                <div style={{ fontSize: 11, color: "#8b949e", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>{s.label}</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: s.color }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Attendance Table */}
+        {attendance.length > 0 && (
+          <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 12, overflow: "hidden", marginBottom: 28 }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid #30363d", fontSize: 12, color: "#8b949e", textTransform: "uppercase", letterSpacing: 1.5 }}>
+              Attendance Records
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#0d1117" }}>
+                  {["Employee", "Department", "Check-In", "Check-Out", "Status", "Anomaly"].map((h) => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, color: "#8b949e", textTransform: "uppercase", letterSpacing: 1, borderBottom: "1px solid #30363d" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {attendance.map((emp) => (
+                  <tr key={emp.id} style={{ borderBottom: "1px solid #21262d" }}>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ background: "linear-gradient(135deg,#7c3aed,#00d4ff)", borderRadius: 6, width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, marginRight: 8, verticalAlign: "middle" }}>
+                        {emp.avatar}
+                      </span>
+                      {emp.name}
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#8b949e" }}>{emp.dept}</td>
+                    <td style={{ padding: "12px 16px" }}>{emp.checkIn || "—"}</td>
+                    <td style={{ padding: "12px 16px" }}>{emp.checkOut || "—"}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{
+                        padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+                        background: emp.status === "Present" ? "rgba(63,185,80,0.12)" : emp.status === "Late" ? "rgba(210,153,34,0.12)" : "rgba(248,81,73,0.12)",
+                        color: emp.status === "Present" ? "#3fb950" : emp.status === "Late" ? "#d29922" : "#f85149",
+                        border: `1px solid ${emp.status === "Present" ? "rgba(63,185,80,0.2)" : emp.status === "Late" ? "rgba(210,153,34,0.2)" : "rgba(248,81,73,0.2)"}`,
+                      }}>
+                        {emp.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: emp.anomaly ? "#d29922" : "#8b949e" }}>
+                      {emp.anomaly ? "⚠ Flagged" : "Clear"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Agent Log + Alerts */}
+        {(agentLog.length > 0 || alerts.length > 0) && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 28 }}>
+            
+            {/* Agent Log */}
+            <div>
+              <div style={{ fontSize: 11, color: "#8b949e", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 10 }}>🧠 Agent Reasoning</div>
+              <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 12, overflow: "hidden" }}>
+                <div style={{ padding: "12px 16px", borderBottom: "1px solid #30363d", fontSize: 12, color: "#00d4ff" }}>
+                  <span style={{ display: "inline-block", width: 8, height: 8, background: "#00d4ff", borderRadius: "50%", marginRight: 6 }}></span>
+                  LIVE AGENT LOG
+                </div>
+                {agentLog.length === 0 && (
+                  <div style={{ padding: 24, color: "#8b949e", fontSize: 13, textAlign: "center" }}>Waiting...</div>
+                )}
+                {agentLog.map((log, i) => (
+                  <div key={i} style={{ padding: "14px 16px", borderBottom: "1px solid #21262d" }}>
+                    <div style={{ fontSize: 11, color: "#7c3aed", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
+                      Step {log.step} · {stepNames[log.step - 1]}
+                    </div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7 }}>{log.summary}</div>
+                    {log.recommendations && log.recommendations.map((r, j) => (
+                      <div key={j} style={{ fontSize: 12, color: "#3fb950", marginTop: 4 }}>→ {r}</div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Alerts */}
+            <div>
+              <div style={{ fontSize: 11, color: "#8b949e", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 10 }}>🚨 Agent Alerts</div>
+              <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 12, overflow: "hidden" }}>
+                <div style={{ padding: "12px 16px", borderBottom: "1px solid #30363d", fontSize: 12, color: "#f85149" }}>
+                  <span style={{ display: "inline-block", width: 8, height: 8, background: "#f85149", borderRadius: "50%", marginRight: 6 }}></span>
+                  ALERTS · {alerts.length}
+                </div>
+                {alerts.length === 0 && (
+                  <div style={{ padding: 24, color: "#8b949e", fontSize: 13, textAlign: "center" }}>No alerts yet.</div>
+                )}
+                {alerts.map((a, i) => (
+                  <div key={i} style={{ padding: "12px 16px", borderBottom: "1px solid #21262d", borderLeft: "3px solid #f85149", fontSize: 13, color: "#ff8a80", lineHeight: 1.6 }}>
+                    {a}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+        )}
 
-          {/* Stats */}
-          {attendance.length > 0 && (
-            <div className="stats">
-              <div className="stat-card">
-                <div className="stat-label">Present</div>
-                <div className="stat-value green">{stats.present}</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-label">Late</div>
-                <div className="stat-value yellow">{stats.late}</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-label">Absent</div>
-                <div className="stat-value red">{stats.absent}</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-label">Anomalies</div>
-                <div className="stat-value blue">{stats.anomalies}</div>
-              </div>
+        {/* Report */}
+        {report && (
+          <div style={{ background: "#161b22", border: "1px solid #3fb950", borderRadius: 12, padding: 24, marginBottom: 28 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#3fb950", marginBottom: 14 }}>📊 Final AI Report</div>
+            <div style={{ fontSize: 13, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{report}</div>
+            <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid #30363d", fontSize: 12, color: "#8b949e" }}>
+              ✓ Generated by AI Agent &nbsp;·&nbsp; Total: {EMPLOYEES.length} employees &nbsp;·&nbsp;
+              Rate: {Math.round(((present + late) / EMPLOYEES.length) * 100)}%
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Attendance Table */}
-          {attendance.length > 0 && (
-            <>
-              <div className="section-title">Attendance Records</div>
-              <div className="table-wrap" style={{ marginBottom: 32 }}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Employee</th>
-                      <th>Department</th>
-                      <th>Role</th>
-                      <th>Check-In</th>
-                      <th>Check-Out</th>
-                      <th>Status</th>
-                      <th>Anomaly</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attendance.map((emp) => (
-                      <tr key={emp.id}>
-                        <td>
-                          <span className="avatar">{emp.avatar}</span>
-                          {emp.name}
-                        </td>
-                        <td style={{ color: "var(--muted)" }}>{emp.dept}</td>
-                        <td style={{ color: "var(--muted)" }}>{emp.role}</td>
-                        <td>{emp.checkIn || <span style={{ color: "var(--muted)" }}>—</span>}</td>
-                        <td>{emp.checkOut || <span style={{ color: "var(--muted)" }}>—</span>}</td>
-                        <td>
-                          <span className={`badge badge-${emp.status.toLowerCase()}`}>{emp.status}</span>
-                        </td>
-                        <td>
-                          {emp.anomaly
-                            ? <span className="anomaly-flag">⚠ Flagged</span>
-                            : <span style={{ color: "var(--muted)" }}>Clear</span>}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
+        {/* Empty State */}
+        {!hasRun && (
+          <div style={{ textAlign: "center", padding: 80, color: "#8b949e" }}>
+            <div style={{ fontSize: 56, marginBottom: 16 }}>🤖</div>
+            <div style={{ fontSize: 18, color: "#e6edf3", marginBottom: 8 }}>Agent Standing By</div>
+            <div style={{ fontSize: 13 }}>Click "RUN AGENT CYCLE" to start the AI simulation</div>
+          </div>
+        )}
 
-          {/* Agent Log + Alerts */}
-          {(agentLog.length > 0 || thinking || alerts.length > 0) && (
-            <>
-              <div className="section-title">Agent Output</div>
-              <div className="two-col">
-                {/* Agent Reasoning Log */}
+      </div>
+    </div>
+  );
+}
